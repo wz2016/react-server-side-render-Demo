@@ -231,16 +231,19 @@ app.use(_express2.default.static('public'));
 app.get('*', function (req, res) {
     var store = (0, _createStore2.default)();
 
-    // argument: route config, path need to be fetch
-    (0, _reactRouterConfig.matchRoutes)(_Routes2.default, req.path).map(function (_ref) {
+    // argument: route config, path need to be fetch; return array of promise for pending request
+    var promises = (0, _reactRouterConfig.matchRoutes)(_Routes2.default, req.path).map(function (_ref) {
         var route = _ref.route;
 
         console.log('route: ', route);
-        return route.loadData ? route.loadData() : null;
+        return route.loadData ? route.loadData(store) : null;
     });
 
-    // some logic to initialze and load data into the store
-    res.send((0, _renderer2.default)(req, store));
+    Promise.all(promises).then(function () {
+        console.log('store: ', store);
+        // some logic to initialze and load data into the store
+        res.send((0, _renderer2.default)(req, store));
+    });
 });
 
 app.listen(3000, function () {
@@ -337,13 +340,13 @@ var UsersList = function (_Component) {
     }
 
     _createClass(UsersList, [{
-        key: 'componentDidMount',
-        value: function componentDidMount() {
-            this.props.fetchUsers();
-        }
-    }, {
         key: 'renderUsers',
+
+        // componentDidMount() {
+        //     this.props.fetchUsers();
+        // }
         value: function renderUsers() {
+            console.log('this.props.users: ', this.props.users);
             return this.props.users.map(function (user) {
                 return _react2.default.createElement(
                     'li',
@@ -372,12 +375,14 @@ var UsersList = function (_Component) {
 }(_react.Component);
 
 function mapStateToProps(state) {
+    // console.log('state: ', state);
     return { users: state.users };
 }
 
 // loading data entry
-function loadData() {
-    console.log('I am trying to load some data');
+function loadData(store) {
+    // console.log('I am trying to load some data');
+    return store.dispatch((0, _actions.fetchUsers)());
 }
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, { fetchUsers: _actions.fetchUsers })(UsersList);

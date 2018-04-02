@@ -37607,13 +37607,13 @@ var UsersList = function (_Component) {
     }
 
     _createClass(UsersList, [{
-        key: 'componentDidMount',
-        value: function componentDidMount() {
-            this.props.fetchUsers();
-        }
-    }, {
         key: 'renderUsers',
+
+        // componentDidMount() {
+        //     this.props.fetchUsers();
+        // }
         value: function renderUsers() {
+            console.log('this.props.users: ', this.props.users);
             return this.props.users.map(function (user) {
                 return _react2.default.createElement(
                     'li',
@@ -37642,12 +37642,14 @@ var UsersList = function (_Component) {
 }(_react.Component);
 
 function mapStateToProps(state) {
+    // console.log('state: ', state);
     return { users: state.users };
 }
 
 // loading data entry
-function loadData() {
-    console.log('I am trying to load some data');
+function loadData(store) {
+    // console.log('I am trying to load some data');
+    return store.dispatch((0, _actions.fetchUsers)());
 }
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, { fetchUsers: _actions.fetchUsers })(UsersList);

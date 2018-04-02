@@ -20,14 +20,18 @@ app.use(express.static('public'));
 app.get('*', (req, res) => {
     const store = createStore();
 
-    // argument: route config, path need to be fetch
-    matchRoutes(Routes, req.path).map(({ route }) => {
+    // argument: route config, path need to be fetch; return array of promise for pending request
+    const promises = matchRoutes(Routes, req.path).map(({ route }) => {
         console.log('route: ', route);
-        return route.loadData ? route.loadData() : null;
+        return route.loadData ? route.loadData(store) : null;
     });
 
-    // some logic to initialze and load data into the store
-    res.send(renderer(req, store));
+
+    Promise.all(promises).then(() => {
+      console.log('store: ', store);
+      // some logic to initialze and load data into the store
+      res.send(renderer(req, store));
+    })
 });
 
 app.listen(3000, () => {
