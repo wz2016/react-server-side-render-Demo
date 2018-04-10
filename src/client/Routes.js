@@ -1,7 +1,7 @@
 import React from 'react';
 // import { Route } from 'react-router-dom';
-import Home from './components/Home';
-import UsersList, { loadData } from './components/UsersList';
+import HomePage from './pages/HomePage';
+import UsersListPage from './pages/UsersListPage';
 
 // OLD Client Render Route
 // export default () => {
@@ -15,13 +15,12 @@ import UsersList, { loadData } from './components/UsersList';
 
 export default [
  {
-     path: '/',
-     component: Home,
-     exact: true
+   ...HomePage,
+   path: '/',
+   exact: true
  },
  {
-     path: '/users',
-     component: UsersList,
-     loadData,
+   ...UsersListPage,
+   path: '/users',
  }
 ];
